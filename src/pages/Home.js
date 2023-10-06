@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { collection, deleteDoc, onSnapshot, doc, where, query, getDocs } from "firebase/firestore";
+import { collection, deleteDoc, onSnapshot, doc, where, query, getDocs, orderBy } from "firebase/firestore";
 import "../App.css";
 import { db } from "../firebase";
 import BlogSection from "../componets/BlogSection";
@@ -10,11 +10,15 @@ import { toast } from "react-toastify";
 import Tags from "../componets/Tags";
 import MostPopular from "../componets/MostPopular";
 import Trending from "../componets/Trending";
+import Search from "../componets/Search";
+import { isEmpty } from "lodash";
+import HeroSection from "../componets/HeroSection";
 
 const Home = ({ setActive, user }) => {
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [tags, setTags] = useState([]);
+  const [search, setSearch] = useState("");
   const [trendingBlogs, setTrendingBlogs] = useState([]);
 
   const getTrendingBlogs = async () => {
@@ -73,10 +77,26 @@ const Home = ({ setActive, user }) => {
     }
   };
 
+  const getBlogs = async() => {
+    const blogRef = collection(db, "blogs");
+    const blogsQuery = query(blogRef, orderBy("title"))
+    const docSnapshot = await getDocs(blogsQuery);
+    setBlogs(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+  }
+
+  const handleChange = (e) => {
+    const {value} = e.target
+    if(isEmpty(value)){
+      getBlogs();
+    }
+    setSearch()
+  };
+
   return (
     <div className="container-fluid pb-4 pt-4 padding">
       <div className="container padding">
         <div className="row mx-0">
+          <HeroSection />
         <Trending blogs={trendingBlogs} />
           <div className="col-md-8">
             <BlogSection
@@ -86,6 +106,7 @@ const Home = ({ setActive, user }) => {
             />
           </div>
           <div className="col-md-3">
+            <Search search={search} handleChange={handleChange} />
           <Tags tags={tags} />
             <MostPopular blogs={blogs} />
           </div>
