@@ -28,7 +28,7 @@ const Auth = ({setActive}) => {
     e.preventDefault();
     if(!signUp){
       if(email && password){
-        const {user} = await signInWithEmailAndPassword(auth, email, password);
+        //const {user} = await signInWithEmailAndPassword(auth, email, password);
         setActive("home");
       }else{
         return toast.error("All fields are required");
