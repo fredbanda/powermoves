@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { auth } from "../firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
   confirmPassword: "",
 };
 
-const Auth = ({setActive}) => {
+const Auth = ({setActive, setUser}) => {
   const [state, setState] = useState(initialState);
   const [signUp, setSignUp] = useState(false);
 
@@ -28,7 +28,12 @@ const Auth = ({setActive}) => {
     e.preventDefault();
     if(!signUp){
       if(email && password){
-        //const {user} = await signInWithEmailAndPassword(auth, email, password);
+        const {user} = await signInWithEmailAndPassword(
+          auth, 
+          email, 
+          password
+          );
+          setUser(user);
         setActive("home");
       }else{
         return toast.error("All fields are required");

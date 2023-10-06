@@ -2,7 +2,9 @@ import React from 'react'
 
 const NotFound = () => {
   return (
-    <div>Sorry Not Found</div>
+    <div>
+      <img src="/images/404.jpg" alt="not found" />
+    </div>
   )
 }
 

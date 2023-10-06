@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { collection, deleteDoc, onSnapshot, doc } from "firebase/firestore";
+import { collection, deleteDoc, onSnapshot, doc, where, query, getDocs } from "firebase/firestore";
 import "../App.css";
 import { db } from "../firebase";
 import BlogSection from "../componets/BlogSection";
@@ -9,13 +9,27 @@ import Spinner from "../componets/Spinner";
 import { toast } from "react-toastify";
 import Tags from "../componets/Tags";
 import MostPopular from "../componets/MostPopular";
+import Trending from "../componets/Trending";
 
 const Home = ({ setActive, user }) => {
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [tags, setTags] = useState([]);
+  const [trendingBlogs, setTrendingBlogs] = useState([]);
+
+  const getTrendingBlogs = async () => {
+    const blogRef = collection(db, "blogs");
+    const trendQuery= query(blogRef, where("trending", "==", "yes"));
+    const querySnapshot = await getDocs(trendQuery);
+    let trendingBlogs = [];
+    querySnapshot.forEach((doc) => {
+      trendingBlogs.push({ id: doc.id, ...doc.data() });
+    });
+    setTrendingBlogs(trendingBlogs);
+  }
 
   useEffect(() => {
+    getTrendingBlogs();
     const unsub = onSnapshot(
       collection(db, "blogs"),
       (snapshot) => {
@@ -38,6 +52,7 @@ const Home = ({ setActive, user }) => {
 
     return () => {
       unsub();
+      getTrendingBlogs();
     };
   }, []);
 
@@ -58,13 +73,11 @@ const Home = ({ setActive, user }) => {
     }
   };
 
-  console.log("blogs", blogs);
-
   return (
     <div className="container-fluid pb-4 pt-4 padding">
       <div className="container padding">
         <div className="row mx-0">
-          <h2>Trending</h2>
+        <Trending blogs={trendingBlogs} />
           <div className="col-md-8">
             <BlogSection
               blogs={blogs}

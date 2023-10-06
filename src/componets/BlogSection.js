@@ -5,6 +5,7 @@ import { excerpt } from "../utility";
 
 
 const BlogSection = ({blogs, user, handleDelete}) => {
+    const userId = user?.uid;
   return (
     <div>
         <div className="blog-heading text-start py-2 mb-4">Daily Posts</div>
@@ -33,7 +34,7 @@ const BlogSection = ({blogs, user, handleDelete}) => {
                     <Link to={`/detail/${item.id}`}>
                     <button className="btn btn-read">Read More</button>                    
                     </Link>
-                    {user?.uid && item.userId === user.uid && (
+                    {userId && item.userId === userId && (
                     <div style={{float: "right"}}>
                         <FontAwesome 
                         name="trash"
